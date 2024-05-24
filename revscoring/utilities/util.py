@@ -1,4 +1,5 @@
 import base64
+import csv
 import json
 import logging
 import os
@@ -17,6 +18,47 @@ DECODERS = {
     'str': lambda v: str(v),
     'bool': lambda v: v in ("True", "true", "1", "T", "y", "Y")
 }
+
+
+def unpack_observations_tsv(tsv_file, features):
+    read_tsv = csv.reader(tsv_file, delimiter="\t")
+    unpacked_observations = []
+    for tsv_row in read_tsv:
+        unpacked_features = []
+        tsv_row_len = len(tsv_row)
+        nb_features = len(features)
+        # First column is the observation id
+        # Last column is the observation reverted Label
+        # In between there should be at least the number of required features
+        if tsv_row_len - 2 < nb_features:
+            print(f"""tsv line contains only {tsv_row_len - 2} feature values.
+            {nb_features} are required for each observation.
+            Please review your tsv input file.""")
+            return None
+        for i in range(nb_features):
+            feature = features[i]
+            # skip the first column, which is the id of the observation
+            tsv_value_str = tsv_row[i+1]
+            if feature.returns == bool:
+                unpacked_features.append(tsv_value_str == 'True')
+            else:
+                # Try to convert the tsv value string into the feature type
+                try:
+                    unpacked_features.append(feature.returns(tsv_value_str))
+                except ValueError:
+                    print(f"Could not convert {tsv_value_str} into a {feature.returns}.")
+                    return None
+                except BaseException as err:
+                    print(f"Unexpected {err}, {type(err)}")
+                    return None
+
+        # Last column is the reverted Label of the observation
+        reverted = tsv_row[-1] == 'True'
+
+        # Save the tuple features, label requested by the model training function
+        unpacked_observations.append((unpacked_features, reverted))
+
+    return unpacked_observations
 
 
 def read_observations(f):
