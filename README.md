@@ -70,14 +70,17 @@ dependencies in your operating system.
 <i>TODO</i>
 -->
 ### MacOS:
-  Using Homebrew and pip, installing `revscoring` and `enchant` can be accomplished
-  as follows::
+Some of the `revscoring` dependencies doesn't have wheel for python version > 3.7, thus it is required to install it with a python 3.7 version.
+  
+Using Homebrew and pip, installing `revscoring` and `enchant` can be accomplished as follows:
 
 ```bash
-brew install aspell --with-all-languages
+brew install aspell
 brew install enchant
-pip install --no-binary pyenchant revscoring
+pip install revscoring
 ```
+#### Apple Silicon (M1)
+As for now (2022/01/13), some of the dependencies of `revscoring` cannot be installed on the native `arm64` Apple Silicon (M1) architecture. Thus, the installation must be performed using the `-x86_64` Rosetta2 simulator.
 
 #### Adding languages in aspell (MacOS only)
 
