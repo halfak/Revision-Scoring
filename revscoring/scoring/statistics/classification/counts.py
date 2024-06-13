@@ -74,7 +74,7 @@ class MultilabelCounts(ModelInfo):
         formatted = "counts (n={0}):\n".format(self['n'])
         table_data = [
             [repr(label), self['labels'][label], '-->'] +
-            [lstats[a][p] for a in [True, False] for p in [True, False]]
+            [lstats[a][p] for p in [True, False] for a in [True, False]]
             for label, lstats in self['predictions'].items()]
         table_str = tabulate(
             table_data, headers=['label', 'n', '', 'TP', 'FP', 'FN', 'TN'])
