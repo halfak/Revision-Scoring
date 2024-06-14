@@ -13,7 +13,7 @@ demo_*.py
 
 # Datasets & Models
 datasets/
-models/*.model
+
 
 # Distribution / packaging
 .Python
